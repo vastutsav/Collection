@@ -1,58 +1,65 @@
+// Build using g++ greetings.cpp -o greetings.o
 #include <iostream>
 #include <string>
 
-void printStar(int n) {
-	for (int i = 0; i < n; ++i) {
-		std::cout << "*";
-	}
-}
-
-void printPlus(int n) {
-	for (int i = 0; i < n; ++i) {
-		std::cout << "+";
-	}
-}
-
 void printSpace(int n) {
 	for (int i = 0; i < n; ++i) {
-		std::cout << " ";
+		std::cout <<" ";
 	}
 }
 
-void newLine() {
-	std::cout << "\n";
+void printStar(int n) {
+	for (int i = 0; i < n; ++i) {
+		std::cout << ((i%2==1)?".":"*");
+	}
 }
 
+
 int main(int argc, char** argv) {
-	std::string input;
+	// Declarations
+	std::string input = "";
+	int length;
+	int halfLength;
 
 	if (argc < 2) {
-		std::cout << "plrase enter string\n";
+		std::cout << "Usage: \n\tgreetings.o message\n";
+		std::cout << "Example: \n\tgreetings.o 12345\n";
+		std::cout << "Output: \n";
+		std::cout << "\t   *\n";
+		std::cout << "\t  *.*\n";
+		std::cout << "\t *.*.*\n";
+		std::cout << "\t 12345\n";
+		std::cout << "\t *.*.*\n";
+		std::cout << "\t  *.*\n";
+		std::cout << "\t   *\n";
 		exit(1);
 	}
 
 	for (int i = 1; i < argc; ++i) {
-		if ( i == 1 )
-			input = argv[i];
-		else
-			input = input + " " + argv[i];
+		input = input + argv[i];
+		if (i < argc - 1) {
+			input = input + " ";
+		}
 	}
 
-	int length = input.size();
-	printPlus(length + 8);
-	newLine();
-	printPlus(1); printStar(length + 6); printPlus(1);
-	newLine();
-	printPlus(1); printStar(1); printSpace(length + 4); printStar(1); printPlus(1);
-	newLine();
-	printPlus(1); printStar(1); printSpace(2); std::cout << input; printSpace(2); printStar(1); printPlus(1);
-	newLine();
-	printPlus(1); printStar(1); printSpace(length + 4); printStar(1); printPlus(1);
-	newLine();
-	printPlus(1); printStar(length + 6); printPlus(1);
-	newLine();
-	printPlus(length + 8);
-	newLine();
-	
+	length = input.size();
+	halfLength = length/2 + 1;
+
+	// print upper triangle
+	for (int i = 0; i < halfLength; ++i) {
+		printSpace(halfLength - i);
+		printStar(2*i + 1);
+		std::cout << "\n";
+	}
+
+	// print the string
+	std::cout << " " << input << "\n";
+
+	// print the lower triangle
+	for (int i = halfLength-1; i >= 0; --i) {
+		printSpace( halfLength - i);
+		printStar( 2*i + 1);
+		std::cout << "\n";
+	}
 	return 0;
 }
