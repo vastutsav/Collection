@@ -104,4 +104,32 @@ local $" = '> <';
 say "cats 3";
 say "<@cats>";
 
+my %addresses =
+(
+	Leonardo => '1123 Fib Place',
+	Utako    => 'Cantor Hotel, Room 1',
+	Victor   => 'Blue Spark',
+	'Sue-Linn'  => 'Mont Blanc'
+);
+
+say $addresses{Victor};
+say $addresses{'Sue-Linn'}; # quotes are needed because the key has '-' character in it
+
+sub get_some_address_from_name{
+	return $addresses{+shift};
+}
+
+say get_some_address_from_name 'Utako';
+
+say "Have Warnie's address" 
+if exists $addresses{Warnie}; 
+# exists does not check the boolean nature of the hash value; a hash key may exist even if its value evaluates to false
+
+$addresses{Leibniz} = undef;
+
+say "Gottfried lives at $addresses{Leibniz}"
+if exists  $addresses{Leibniz}
+&& defined $addresses{Leibniz};
+# If a hash key exists, its value may be undef. Check that with defined
+
 
