@@ -1,3 +1,3 @@
-Hi,
+I am writing my own time tracker.
 
-this is a test.
+using a flat file as a DB.
