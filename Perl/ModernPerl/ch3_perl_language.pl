@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 use strict;
 use warnings;
 
@@ -132,4 +134,97 @@ if exists  $addresses{Leibniz}
 && defined $addresses{Leibniz};
 # If a hash key exists, its value may be undef. Check that with defined
 
+
+for my $addressee (keys %addresses) {
+	say "Found adderss for $addressee";
+}
+
+for my $address(values %addresses) {
+	say "Someone lives at $address";
+}
+
+while (my ($addressee, $address) = each %addresses){ # was unable to figure out a for loop version of this
+	say "$addressee stays at $address";
+}
+
+# hashes has a single iterator. in order to reset to iterator, we need to use keys or values keyword
+
+# using hash slices, we can merge 2 hashes
+
+my %other_addresses = 
+(
+	Alice 	=> '111 Computer Street',
+	Bob	=> '420 Fake Boulevard'
+);
+
+@addresses{keys %other_addresses} = values %other_addresses;
+
+
+say "After merging the hashes";
+while (my ($addressee, $address) = each %addresses){ # was unable to figure out a for loop version of this
+	say "$addressee stays at $address";
+}
+
+# creating a set out of hash
+my @fruits = qw(apple grapes banana mango apple banana orange);
+my %set;
+undef @set{@fruits};
+
+say "+++++++ Printing unique fruits ++++++";
+foreach (keys %set) {
+	say "fruit=> $_";
+}
+
+# creating a cache of computed items
+# defined-or assignment operator //=
+# checks definedness
+# if the value is not defined, then assignment operation is performed
+sub expensive_operation{
+	my $a=shift;
+	say "expesive operation called for $a";
+	$a*$a;
+}
+
+my %my_cache;
+
+my @numbers = (1,2,3,1,2,3,4,5);
+
+foreach (@numbers) {
+	$my_cache{$_} //= expensive_operation($_); # function is called only if data has not been computed
+}
+
+foreach (@numbers) {
+	say "$_ => $my_cache{$_}";
+}
+
+# boolean-or operator ||=
+# checks truthiness 
+# if value is false, then the assignment operation is done
+sub checkin{
+	my $a = shift;
+	say "$a checked in the hotel";
+	1;
+}
+
+my %guest_checkin =
+(
+	alice 		=> 0,
+	bob 		=> 0,
+	charlie 	=> 1,
+	david		=> 0
+);
+
+my @guests = qw(alice bob charlie david eve);
+
+foreach (@guests) {
+	$guest_checkin{$_} ||= checkin($_);
+}
+
+foreach (@guests) {
+	if ($guest_checkin{$_}) {
+		say "$_ is in the hotel";
+	} else {
+		say "$_ did not check in";
+	}
+}
 
