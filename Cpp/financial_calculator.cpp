@@ -1,7 +1,7 @@
 #include <iostream>
 
 
-const char DEBUG_ON = 'N';
+const char DEBUG_ON = 'Y';
 
 // defining the magic numbers
 const double ALLOWED_DEVIATION = 5000; // keeping it 5000 to speed up the algorithm
@@ -19,7 +19,7 @@ const double yearly_one_time_expense = 25000;
 const double inflation_rate = 0.07;
 const double equity_rate_of_return = 12.0/100.0;
 const double debt_rate_of_return = 7.5/100.0;
-
+const double yearly_investment_increment_rate = 0;
 
 
 double get_rate() {
@@ -38,26 +38,33 @@ double get_inflated_yearly_expenditure(double inflation_rate, double expense) {
     return (1 + inflation_rate) * expense;
 }
 
-double get_money_needed_at_retirement () {
+double get_money_needed_at_retirement ( int retirement_age,
+                                        int final_age,
+                                        double expense[100]) {
     
+    double final_amount = 0.0;
+
+    for (int age = retirement_age + 1; age <= final_age; ++age) {
+        final_amount+=expense[age];
+    }
+    
+    return final_amount;
+}
+
+void get_money_needed_every_year (double expense[101]) {
+
     double amount_for_the_age = get_current_yearly_expenditure();
     double amount_needed = 0.0;
+    int age = current_age;
 
-    if (DEBUG_ON == 'Y') {
-        std::cout << "age, amount" << std::endl;
-        printf("%d, %.2lf\n", current_age, amount_for_the_age);
-    }
-    for (int i = 1; (i + current_age) <= final_age; ++i) {
-        amount_for_the_age = get_inflated_yearly_expenditure(inflation_rate, amount_for_the_age);
+    do {
         if (DEBUG_ON == 'Y') {
-            printf("%d, %.2lf\n", current_age + i, amount_for_the_age);
+            printf("age = <%d>, amount = <%.2lf>\n", age, amount_for_the_age);
         }
-
-        if (i+current_age > retirement_age) {
-            amount_needed+=amount_for_the_age;
-        }
-    }
-    return amount_needed;
+        expense[age] = amount_for_the_age;
+        amount_for_the_age = get_inflated_yearly_expenditure(inflation_rate, amount_for_the_age);
+        ++age;
+    }while (age <= final_age);
 }
 
 double get_money_needed_at_retirement_bucket () {
@@ -163,7 +170,7 @@ double get_required_yearly_investment_glidepath(double present_value,
         
         if (abs(target_value - temp_amount) <= ALLOWED_DEVIATION) {
             if (DEBUG_ON == 'Y') {
-                printf ("In get_required_yearly_investment, temp_amount = <%.2f>\n", abs(target_value - temp_amount));
+                printf ("In get_required_yearly_investment_glidepath, temp_amount = <%.2f>\n", abs(target_value - temp_amount));
             }
             return probable_amount;
         } else if (temp_amount > target_value) {
@@ -180,9 +187,14 @@ int main () {
 
     int years_before_retirement = retirement_age - current_age + 1; 
 
-    const double yearly_investment_increment_rate = 0;
+    double expenses[101] = {0};
 
-    double money_needed_at_retirement = get_money_needed_at_retirement();
+    get_money_needed_every_year(expenses);
+
+    double money_needed_at_retirement = get_money_needed_at_retirement( retirement_age,
+                                                                        final_age,
+                                                                        expenses);
+
     double yearly_investment = get_required_yearly_investment(present_value, 
                                                               money_needed_at_retirement, 
                                                               years_before_retirement, 
