@@ -9,7 +9,7 @@ const double ALLOWED_DEVIATION = 5000.0; // keeping it 5000 to speed up the algo
 const int BUCKET_INTERVALS = 10;
 
 // important milestone age
-const int current_age = 32;
+const int current_age = 34;
 const int retirement_age = 50;
 const int final_age = 80;
 
@@ -18,7 +18,7 @@ const double current_expense_per_month = 20000;
 const double yearly_one_time_expense = 25000;
 
 // balances
-int present_value = 1500000;
+const double present_value = 1500000.0;
 
 // rates
 const double inflation_rate = 0.07;
