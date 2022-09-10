@@ -9,7 +9,7 @@ const double ALLOWED_DEVIATION = 5000.0; // keeping it 5000 to speed up the algo
 const int BUCKET_INTERVALS = 10;
 
 // important milestone age
-const int current_age = 34;
+const int current_age = 32;
 const int retirement_age = 50;
 const int final_age = 80;
 
@@ -94,7 +94,7 @@ double get_required_yearly_investment(  double present_value,
                                         double yearly_increment_rate ) {
 
     double min_amt = 0;
-    double max_amt = 1E7;
+    double max_amt = 1E8;
     double temp_amount = 0;
 
     double probable_amount;
@@ -241,7 +241,7 @@ double get_money_needed_at_retirement_bucket (  int retirement_age,
                                                 double expense[101]) {
     
     double min_amt = 0.0;
-    double max_amount = 10E7 * 9;
+    double max_amount = 1E7 * 9;
     double final_amount = 0.0;
 
     while (1) {
