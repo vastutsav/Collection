@@ -5,27 +5,38 @@
 const char DEBUG_ON = 'N';
 
 // defining the magic numbers
-const double ALLOWED_DEVIATION = 5000.0; // keeping it 5000 to speed up the algorithm
+const double ALLOWED_DEVIATION = 10000.0; 
+            /* keeping error 10000 to speed up the algorithm.
+                the allowed error is 10000 after all the compounding for around 20 years
+                which is around 150 units compounded by 10% for 20 years 
+                */
+
 const int BUCKET_INTERVALS = 10;
 
 // important milestone age
-const int current_age = 32;
+const int current_age = 34;
 const int retirement_age = 50;
 const int final_age = 80;
 
-// expenses
+// current expenses
 const double current_expense_per_month = 20000;
 const double yearly_one_time_expense = 25000;
 
-// balances
+// existing balances
 const double present_value = 1500000.0;
 
 // rates
 const double inflation_rate = 0.07;
-const double equity_rate_of_return = 12.0/100.0;
+const double equity_rate_of_return = 13.0/100.0;
 const double debt_rate_of_return = 7.5/100.0;
 const double yearly_investment_increment_rate = 0;
 const double bank_rate_of_return = 4/100.0;
+
+// bucket configs
+const int bucket_equity_alloc = 30;
+const int bucket_debt_alloc = 40;
+const int bucket_bank_alloc = 30;
+
 
 
 double get_rate() {
@@ -106,9 +117,9 @@ double get_required_yearly_investment(  double present_value,
                                                      years,
                                                      yearly_increment_rate);
         
-        if (abs(target_value - temp_amount) <= ALLOWED_DEVIATION) {
+        if (fabs(target_value - temp_amount) <= ALLOWED_DEVIATION) {
             if (DEBUG_ON == 'Y') {
-                printf ("In get_required_yearly_investment, temp_amount = <%.2f>\n", abs(target_value - temp_amount));
+                printf ("In get_required_yearly_investment, temp_amount = <%.2f>\n", fabs(target_value - temp_amount));
             }
             return probable_amount;
         } else if (temp_amount > target_value) {
@@ -155,7 +166,7 @@ double get_required_yearly_investment_glidepath(double present_value,
                                                 int current_age ) {
 
     double min_amt = 0;
-    double max_amt = 1E7;
+    double max_amt = 1E8;
     double temp_amount = 0;
 
     double probable_amount;
@@ -168,9 +179,9 @@ double get_required_yearly_investment_glidepath(double present_value,
                                                                 yearly_increment_rate,
                                                                 current_age);
         
-        if (abs(target_value - temp_amount) <= ALLOWED_DEVIATION) {
+        if (fabs(target_value - temp_amount) <= ALLOWED_DEVIATION) {
             if (DEBUG_ON == 'Y') {
-                printf ("In get_required_yearly_investment_glidepath, temp_amount = <%.2f>\n", abs(target_value - temp_amount));
+                printf ("In get_required_yearly_investment_glidepath, temp_amount = <%.2f>\n", fabs(target_value - temp_amount));
             }
             return probable_amount;
         } else if (temp_amount > target_value) {
@@ -184,11 +195,11 @@ double get_required_yearly_investment_glidepath(double present_value,
 
 
 double get_rate_bucket() {
-    int equity_alloc = 30;
-    int debt_alloc = 70;
-    int bank_alloc = 0;
 
-    return (equity_alloc/100.0 * equity_rate_of_return) + (debt_alloc/100.0 * debt_rate_of_return) + (bank_alloc/100.0 * bank_rate_of_return);
+    return (bucket_equity_alloc/100.0 * equity_rate_of_return) 
+            + (bucket_debt_alloc/100.0 * debt_rate_of_return) 
+            + (bucket_bank_alloc/100.0 * bank_rate_of_return);
+
 }
 
 double get_future_value_of_investment_bucket(   double present_value, 
@@ -211,7 +222,7 @@ double get_money_remaining_at_final_age_bucket (int retirement_age,
                                                 double expenses[101]) {
     
     double min_amt = 0;
-    double max_amt = 1E7 * 9;
+    double max_amt = 1E8;
 
     int remaining_years = final_age - retirement_age;
     int number_of_bucket_iterations = std::ceil(double(remaining_years)/BUCKET_INTERVALS);
@@ -241,7 +252,7 @@ double get_money_needed_at_retirement_bucket (  int retirement_age,
                                                 double expense[101]) {
     
     double min_amt = 0.0;
-    double max_amount = 1E7 * 9;
+    double max_amount = 1E8;
     double final_amount = 0.0;
 
     while (1) {
@@ -251,7 +262,7 @@ double get_money_needed_at_retirement_bucket (  int retirement_age,
                                                                              final_amount, 
                                                                              expense);
 
-        if (abs(corpus_at_final_age) < ALLOWED_DEVIATION) {
+        if (fabs(corpus_at_final_age) < ALLOWED_DEVIATION) {
             return final_amount;
         } else if (corpus_at_final_age > ALLOWED_DEVIATION) {
             max_amount = final_amount;
@@ -279,7 +290,7 @@ int main () {
                                                               years_before_retirement, 
                                                               yearly_investment_increment_rate);
 
-    double monthly_investment = yearly_investment/12;
+    double monthly_investment = yearly_investment/12.0;
 
     double yearly_investment_glidepath = get_required_yearly_investment_glidepath(  present_value, 
                                                                                     money_needed_at_retirement, 
@@ -287,7 +298,7 @@ int main () {
                                                                                     yearly_investment_increment_rate,
                                                                                     current_age);
 
-    double monthly_investment_glidepath = yearly_investment_glidepath/12;
+    double monthly_investment_glidepath = yearly_investment_glidepath/12.0;
 
     double money_needed_at_retirement_with_bucket_strategy = get_money_needed_at_retirement_bucket( retirement_age,
                                                                                                     final_age,
@@ -298,7 +309,7 @@ int main () {
                                                               years_before_retirement, 
                                                               yearly_investment_increment_rate);
 
-    double monthly_investment_bucket = yearly_investment_bucket/12;
+    double monthly_investment_bucket = yearly_investment_bucket/12.0;
 
     double yearly_investment_glidepath_bucket = get_required_yearly_investment_glidepath(  present_value, 
                                                                                     money_needed_at_retirement_with_bucket_strategy, 
@@ -306,7 +317,7 @@ int main () {
                                                                                     yearly_investment_increment_rate,
                                                                                     current_age);
 
-    double monthly_investment_glidepath_bucket = yearly_investment_glidepath_bucket/12;
+    double monthly_investment_glidepath_bucket = yearly_investment_glidepath_bucket/12.0;
 
     printf("at retirement age = <%ld>, required amount = <%.2lf>\n", retirement_age, money_needed_at_retirement);
     printf("at retirement age = <%ld>, required amount with Bucket strategy = <%.2lf>\n", retirement_age, money_needed_at_retirement_with_bucket_strategy);
