@@ -43,6 +43,7 @@ say "Heyo";
 my $tmp = some_function; #last item of the list returned by the function is stored in $tmp
 say "1. tmp = $tmp";
 
+say "QWER";
 $tmp = () = some_function; #number of items returned by the function is stored in $tmp. this is because the functions response is converted to a list and then to scalar.
 say "2. tmp = $tmp";
 
