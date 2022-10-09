@@ -21,7 +21,7 @@ df = pdr.get_data_yahoo(stock, start, now)
 
 # print(df)
 
-# movind average
+# moving average
 ma = 200
 smaString = "Sma_" + str(ma)
 
@@ -29,7 +29,7 @@ df[smaString] = df.iloc[:,4].rolling(window=ma).mean()
 
 df = df.iloc[ma:]
 
-# print(df)
+print(df)
 
 numH=0
 numL=0
@@ -42,5 +42,5 @@ for i in df.index:
     else:
         numH+=1
 
-print ("number of times the price was lower than the moving average is " + str(numL))
-print ("number of times the price was higher than the moving average is " + str(numH))
+# print ("number of times the price was lower than the moving average is " + str(numL))
+# print ("number of times the price was higher than the moving average is " + str(numH))
